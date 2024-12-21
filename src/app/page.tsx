@@ -1,36 +1,34 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useState } from "react";
 import { generateImage } from "./actions/generateImage";
 
 export default function Home() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState([
-    "https://dummyimage.com/300x200/555/fff&text=Image+1",
-    "https://dummyimage.com/300x200/888/fff&text=Image+2",
-    "https://dummyimage.com/300x200/888/fff&text=Image+3",
-    "https://dummyimage.com/300x200/555/fff&text=Image+4",
-    "https://dummyimage.com/300x200/aaa/fff&text=Image+5",
-    "https://dummyimage.com/300x200/333/fff&text=Image+6",
-    "https://dummyimage.com/300x200/666/fff&text=Image+7",
-    "https://dummyimage.com/300x200/444/fff&text=Image+8",
-    "https://dummyimage.com/300x200/777/fff&text=Image+9",
-    "https://dummyimage.com/300x200/555/fff&text=Image+10",
-    "https://dummyimage.com/300x200/aaa/fff&text=Image+11",
-    "https://dummyimage.com/300x200/888/fff&text=Image+12",
-    "https://dummyimage.com/300x200/333/fff&text=Image+13",
-    "https://dummyimage.com/300x200/666/fff&text=Image+14",
-    "https://dummyimage.com/300x200/444/fff&text=Image+15",
-    "https://dummyimage.com/300x200/777/fff&text=Image+16",
-    "https://dummyimage.com/300x200/888/fff&text=Image+17",
-    "https://dummyimage.com/300x200/333/fff&text=Image+18",
-    "https://dummyimage.com/300x200/666/fff&text=Image+19",
-    "https://dummyimage.com/300x200/555/fff&text=Image+20",
-  ]);
+  const [images, setImages] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch("/api/images");
+        const data = await response.json();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+        if (data.success) {
+          setImages(data.images);
+        } else {
+          console.error("Failed to fetch images:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching images:", error);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -57,24 +55,17 @@ export default function Home() {
       </h1>
       <main className="flex-1">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {[
-            <div key="plus" className="relative">
-              <div className="w-full h-full bg-gray-800 flex items-center justify-center rounded-lg">
-                <span className="text-3xl font-bold text-white">+</span>
-              </div>
-            </div>,
-            ...images.map((image, index) => (
-              <div key={index} className="relative">
-                <Image
-                  src={image}
-                  width={300}
-                  height={200}
-                  alt={`Generated image ${index + 1}`}
-                  className="object-cover w-full h-full rounded-lg"
-                />
-              </div>
-            )),
-          ]}
+          {images.map((image, index) => (
+            <div key={index} className="relative">
+              <Image
+                src={image}
+                width={300}
+                height={200}
+                alt={`Generated image ${index + 1}`}
+                className="object-cover w-full h-full rounded-lg"
+              />
+            </div>
+          ))}
         </div>
       </main>
       <footer className="w-full fixed bottom-0 left-0 bg-black text-white py-2">
