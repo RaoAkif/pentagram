@@ -7,7 +7,7 @@ import { generateImage } from "./actions/generateImage";
 export default function Home() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<{ url: string; loading: boolean }[]>([]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -16,7 +16,7 @@ export default function Home() {
         const data = await response.json();
 
         if (data.success) {
-          setImages(data.images);
+          setImages(data.images.map((img: string) => ({ url: img, loading: false })));
         } else {
           console.error("Failed to fetch images:", data.error);
         }
@@ -28,10 +28,15 @@ export default function Home() {
     fetchImages();
   }, []);
 
-  // Fix: Type the event parameter as React.FormEvent<HTMLFormElement>
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Add a loading state placeholder for the new image
+    setImages((prev) => [
+      ...prev,
+      { url: "", loading: true }, // Add a loading skeleton placeholder
+    ]);
 
     try {
       const data = await generateImage(inputText);
@@ -40,8 +45,19 @@ export default function Home() {
         throw new Error(data.error || "Failed to generate image");
       }
 
-      setImages((prev) => [...prev, data.imageUrl]);
+      // Replace the loading skeleton with the real image once it's fetched
+      setImages((prev) => {
+        const updatedImages = [...prev];
+        updatedImages[updatedImages.length - 1] = { url: data.imageUrl, loading: false };
+        return updatedImages;
+      });
       setInputText("");
+
+      // Scroll to the bottom of the page
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth",
+      });
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -58,13 +74,18 @@ export default function Home() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {images.map((image, index) => (
             <div key={index} className="relative">
-              <Image
-                src={image}
-                width={300}
-                height={200}
-                alt={`Generated image ${index + 1}`}
-                className="object-cover w-full h-full rounded-lg"
-              />
+              {image.loading ? (
+                // Skeleton loader with shimmer effect
+                <div className="w-full h-full bg-gray-300 rounded-lg animate-skeleton"></div>
+              ) : (
+                <Image
+                  src={image.url}
+                  width={300}
+                  height={200}
+                  alt={`Generated image ${index + 1}`}
+                  className="object-cover w-full h-full rounded-lg"
+                />
+              )}
             </div>
           ))}
         </div>
