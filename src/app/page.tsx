@@ -8,7 +8,7 @@ export default function Home() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<string[]>([]);
-  
+
   useEffect(() => {
     const fetchImages = async () => {
       try {
@@ -28,7 +28,8 @@ export default function Home() {
     fetchImages();
   }, []);
 
-  const handleSubmit = async (e) => {
+  // Fix: Type the event parameter as React.FormEvent<HTMLFormElement>
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
