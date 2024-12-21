@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
     const imageBuffer = await response.arrayBuffer();
 
-    const filename = `$crypto.randomUUID().jpg`
+    const filename = `${crypto.randomUUID()}.jpg`
 
     const blob = await put(filename, imageBuffer, {
       access: "public",
