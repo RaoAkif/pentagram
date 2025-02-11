@@ -1,7 +1,7 @@
 ![Headstarter Banner](https://github.com/user-attachments/assets/80ea1608-e1b1-466f-9153-99153f4a65b8)
-# **Instant Imaginator: Realtime Image Diffusion**
+# **Pentagram: Realtime Image Diffusion**
 
-> Instant Imaginator is a web app that enables users to generate images from text prompts using a self-hosted image generation model, like Stable Diffusion, on serverless GPUs. It offers an Instagram-like experience, where users can create, like, comment, and share images, all while ensuring low-latency performance for a smooth interaction.
+> Pentagram is a web app that enables users to generate images from text prompts using a self-hosted image generation model, like Stable Diffusion, on serverless GPUs. It offers an Instagram-like experience, where users can create, like, comment, and share images, all while ensuring low-latency performance for a smooth interaction.
 
 ## Project Overview
 
